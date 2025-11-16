@@ -1,74 +1,136 @@
-import express from 'express';
-import Hello from "./Hello.js"
-import Lab5 from './Lab5/index.js';
-import cors from "cors";
-import db from "./Kambaz/Database/index.js";
-import UserRoutes from "./Kambaz/Users/routes.js";
-import "dotenv/config";
-import session from "express-session";
-import CourseRoutes from './Kambaz/Courses/routes.js';
-import ModuleRoutes from './Kambaz/Modules/routes.js';
-import AssignmentRoutes from './Kambaz/Assignments/routes.js';
-import EnrollmentRoutes from "./Kambaz/Enrollments/routes.js";
-
-const app = express();
-
-const isProduction = process.env.NODE_ENV === 'production';
-
-const allowedOrigins = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "https://fa25-kambaz-next-js-git-a5-abhijiths-projects-7705a139.vercel.app",
-    "https://fa25-kambaz-next-js.vercel.app",
+let todos = [
+    { id: 1, title: "Task 1", description: "Description 1", completed: false },
+    { id: 2, title: "Task 2", description: "Description 2", completed: true },
+    { id: 3, title: "Task 3", description: "Description 3", completed: false },
+    { id: 4, title: "Task 4", description: "Description 4", completed: true },
+    { id: 5, title: "Task 5", description: "Description 5", completed: true },
+    { id: 6, title: "Task 6", description: "Description 6", completed: true },
 ];
 
-if (process.env.CLIENT_URL) {
-    allowedOrigins.push(process.env.CLIENT_URL);
-}
-
-app.use(cors({
-    credentials: true,
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
-
-        if (allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            console.log("Blocked by CORS:", origin);
-            callback(new Error('Not allowed by CORS'));
+export default function WorkingWithArrays(app) {
+    const getTodos = (req, res) => {
+        const { completed } = req.query;
+        if (completed !== undefined) {
+            const completedBool = completed === "true";
+            const completedTodos = todos.filter((t) => t.completed === completedBool);
+            res.json(completedTodos);
+            return;
         }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+        res.json(todos);
+    };
 
-const sessionOptions = {
-    secret: process.env.SESSION_SECRET || "kambaz",
-    resave: false,
-    saveUninitialized: false,
-    proxy: isProduction,
-    cookie: {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
-        maxAge: 24 * 60 * 60 * 1000
-    }
+    const getTodoById = (req, res) => {
+        const { id } = req.params;
+        const todo = todos.find((t) => t.id === parseInt(id));
+        if (!todo) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(404).json({ message: `Todo with ID ${id} not found` });
+        }
+        res.json(todo);
+    };
+
+    const createNewTodo = (req, res) => {
+        const newTodo = {
+            id: new Date().getTime(),
+            title: "New Task",
+            description: "New Description",
+            completed: false,
+        };
+        todos.push(newTodo);
+        res.json(todos);
+    };
+
+    const postNewTodo = (req, res) => {
+        const newTodo = { ...req.body, id: new Date().getTime() };
+        todos.push(newTodo);
+        res.json(newTodo);
+    };
+
+    const removeTodo = (req, res) => {
+        const { id } = req.params;
+        const todoIndex = todos.findIndex((t) => t.id === parseInt(id));
+        if (todoIndex === -1) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(404).json({ message: `Todo with ID ${id} not found` });
+        }
+        todos.splice(todoIndex, 1);
+        res.json(todos);
+    };
+
+    const deleteTodo = (req, res) => {
+        const { id } = req.params;
+        const todoIndex = todos.findIndex((t) => t.id === parseInt(id));
+        if (todoIndex === -1) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(404).json({
+                message: `Unable to delete Todo with ID ${id}`,
+                error: true
+            });
+        }
+        todos.splice(todoIndex, 1);
+        res.json({ success: true, message: "Todo deleted successfully" });
+    };
+
+    const updateTodoTitle = (req, res) => {
+        const { id, title } = req.params;
+        const todo = todos.find((t) => t.id === parseInt(id));
+        if (!todo) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(404).json({ message: `Todo with ID ${id} not found` });
+        }
+        todo.title = decodeURIComponent(title);
+        res.json(todos);
+    };
+
+    const updateTodoCompleted = (req, res) => {
+        const { id, completed } = req.params;
+        const todo = todos.find((t) => t.id === parseInt(id));
+        if (!todo) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(404).json({ message: `Todo with ID ${id} not found` });
+        }
+        todo.completed = completed === "true";
+        res.json(todos);
+    };
+
+    const updateTodoDescription = (req, res) => {
+        const { id, description } = req.params;
+        const todo = todos.find((t) => t.id === parseInt(id));
+        if (!todo) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(404).json({ message: `Todo with ID ${id} not found` });
+        }
+        todo.description = decodeURIComponent(description);
+        res.json(todos);
+    };
+
+    const updateTodo = (req, res) => {
+        const { id } = req.params;
+        const todoIndex = todos.findIndex((t) => t.id === parseInt(id));
+        if (todoIndex === -1) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(404).json({
+                message: `Unable to update Todo with ID ${id}`,
+                error: true
+            });
+        }
+        todos = todos.map((t) => {
+            if (t.id === parseInt(id)) {
+                return { ...t, ...req.body };
+            }
+            return t;
+        });
+        res.json({ success: true, message: "Todo updated successfully", todo: todos.find(t => t.id === parseInt(id)) });
+    };
+
+    app.get("/lab5/todos", getTodos);
+    app.post("/lab5/todos", postNewTodo);
+    app.get("/lab5/todos/create", createNewTodo);
+    app.get("/lab5/todos/:id/delete", removeTodo);
+    app.get("/lab5/todos/:id/title/:title", updateTodoTitle);
+    app.get("/lab5/todos/:id/completed/:completed", updateTodoCompleted);
+    app.get("/lab5/todos/:id/description/:description", updateTodoDescription);
+    app.get("/lab5/todos/:id", getTodoById);
+    app.put("/lab5/todos/:id", updateTodo);
+    app.delete("/lab5/todos/:id", deleteTodo);
 };
-
-app.use(session(sessionOptions));
-
-app.use(express.json());
-UserRoutes(app, db);
-CourseRoutes(app, db);
-ModuleRoutes(app, db);
-AssignmentRoutes(app, db);
-EnrollmentRoutes(app, db);
-Hello(app);
-Lab5(app);
-
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`Environment: ${isProduction ? 'production' : 'development'}`);
-    console.log(`CORS enabled for:`, allowedOrigins);
-});

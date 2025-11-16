@@ -23,7 +23,8 @@ export default function WorkingWithArrays(app) {
         const { id } = req.params;
         const todo = todos.find((t) => t.id === parseInt(id));
         if (!todo) {
-            res.status(404).json({ message: `Todo with ID ${id} not found` });
+            // Ensure Content-Type is set for error responses
+            res.status(404).type('application/json').json({ message: `Todo with ID ${id} not found` });
             return;
         }
         res.json(todo);
@@ -50,7 +51,8 @@ export default function WorkingWithArrays(app) {
         const { id } = req.params;
         const todoIndex = todos.findIndex((t) => t.id === parseInt(id));
         if (todoIndex === -1) {
-            res.status(404).json({ message: `Todo with ID ${id} not found` });
+            // Ensure Content-Type is set for error responses
+            res.status(404).type('application/json').json({ message: `Todo with ID ${id} not found` });
             return;
         }
         todos.splice(todoIndex, 1);
@@ -61,18 +63,19 @@ export default function WorkingWithArrays(app) {
         const { id } = req.params;
         const todoIndex = todos.findIndex((t) => t.id === parseInt(id));
         if (todoIndex === -1) {
-            res.status(404).json({ message: `Unable to delete Todo with ID ${id}` });
+            // Ensure Content-Type is set for error responses
+            res.status(404).type('application/json').json({ message: `Unable to delete Todo with ID ${id}` });
             return;
         }
         todos.splice(todoIndex, 1);
-        res.sendStatus(200);
+        res.status(200).json({ message: "Todo deleted successfully" });  // Changed from sendStatus to json
     };
 
     const updateTodoTitle = (req, res) => {
         const { id, title } = req.params;
         const todo = todos.find((t) => t.id === parseInt(id));
         if (!todo) {
-            res.status(404).json({ message: `Todo with ID ${id} not found` });
+            res.status(404).type('application/json').json({ message: `Todo with ID ${id} not found` });
             return;
         }
         todo.title = decodeURIComponent(title);
@@ -83,7 +86,7 @@ export default function WorkingWithArrays(app) {
         const { id, completed } = req.params;
         const todo = todos.find((t) => t.id === parseInt(id));
         if (!todo) {
-            res.status(404).json({ message: `Todo with ID ${id} not found` });
+            res.status(404).type('application/json').json({ message: `Todo with ID ${id} not found` });
             return;
         }
         todo.completed = completed === "true";
@@ -94,7 +97,7 @@ export default function WorkingWithArrays(app) {
         const { id, description } = req.params;
         const todo = todos.find((t) => t.id === parseInt(id));
         if (!todo) {
-            res.status(404).json({ message: `Todo with ID ${id} not found` });
+            res.status(404).type('application/json').json({ message: `Todo with ID ${id} not found` });
             return;
         }
         todo.description = decodeURIComponent(description);
@@ -105,7 +108,7 @@ export default function WorkingWithArrays(app) {
         const { id } = req.params;
         const todoIndex = todos.findIndex((t) => t.id === parseInt(id));
         if (todoIndex === -1) {
-            res.status(404).json({ message: `Unable to update Todo with ID ${id}` });
+            res.status(404).type('application/json').json({ message: `Unable to update Todo with ID ${id}` });
             return;
         }
         todos = todos.map((t) => {
@@ -114,7 +117,7 @@ export default function WorkingWithArrays(app) {
             }
             return t;
         });
-        res.sendStatus(200);
+        res.status(200).json({ message: "Todo updated successfully" });  // Changed from sendStatus to json
     };
 
     app.get("/lab5/todos", getTodos);
