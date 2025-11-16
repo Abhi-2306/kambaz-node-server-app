@@ -40,7 +40,6 @@ export default function WorkingWithArrays(app) {
         res.json(newTodo);
     };
 
-
     const removeTodo = (req, res) => {
         const { id } = req.params;
         const todoIndex = todos.findIndex((t) => t.id === parseInt(id));
@@ -60,27 +59,41 @@ export default function WorkingWithArrays(app) {
         res.sendStatus(200);
     };
 
-
     const updateTodoTitle = (req, res) => {
         const { id, title } = req.params;
+        const decodedTitle = decodeURIComponent(title);
         const todo = todos.find((t) => t.id === parseInt(id));
-        todo.title = title;
+        if (!todo) {
+            res.status(404).json({ message: `Todo with ID ${id} not found` });
+            return;
+        }
+        todo.title = decodedTitle;
         res.json(todos);
     };
 
     const updateTodoCompleted = (req, res) => {
         const { id, completed } = req.params;
         const todo = todos.find((t) => t.id === parseInt(id));
+        if (!todo) {
+            res.status(404).json({ message: `Todo with ID ${id} not found` });
+            return;
+        }
         todo.completed = completed === "true";
         res.json(todos);
     };
 
     const updateTodoDescription = (req, res) => {
         const { id, description } = req.params;
+        const decodedDescription = decodeURIComponent(description);
         const todo = todos.find((t) => t.id === parseInt(id));
-        todo.description = description;
+        if (!todo) {
+            res.status(404).json({ message: `Todo with ID ${id} not found` });
+            return;
+        }
+        todo.description = decodedDescription;
         res.json(todos);
     };
+
     const updateTodo = (req, res) => {
         const { id } = req.params;
         const todoIndex = todos.findIndex((t) => t.id === parseInt(id));
@@ -100,11 +113,11 @@ export default function WorkingWithArrays(app) {
     app.get("/lab5/todos", getTodos);
     app.post("/lab5/todos", postNewTodo);
     app.get("/lab5/todos/create", createNewTodo);
-    app.put("/lab5/todos/:id", updateTodo);
-    app.delete("/lab5/todos/:id", deleteTodo);
     app.get("/lab5/todos/:id/delete", removeTodo);
     app.get("/lab5/todos/:id/title/:title", updateTodoTitle);
     app.get("/lab5/todos/:id/completed/:completed", updateTodoCompleted);
     app.get("/lab5/todos/:id/description/:description", updateTodoDescription);
     app.get("/lab5/todos/:id", getTodoById);
+    app.put("/lab5/todos/:id", updateTodo);
+    app.delete("/lab5/todos/:id", deleteTodo);
 };
