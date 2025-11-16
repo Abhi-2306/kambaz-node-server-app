@@ -14,7 +14,7 @@ import EnrollmentRoutes from "./Kambaz/Enrollments/routes.js";
 const app = express();
 app.use(cors({
     credentials: true,
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: process.env.CLIENT_URL || "http://localhost:3000" || "https://fa25-kambaz-next-js-git-a5-abhijiths-projects-7705a139.vercel.app",
 })
 );
 const sessionOptions = {
