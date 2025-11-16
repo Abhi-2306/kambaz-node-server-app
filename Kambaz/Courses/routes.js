@@ -7,7 +7,6 @@ export default function CourseRoutes(app, db) {
 
     const findAllCourses = (req, res) => {
         const currentUser = req.session["currentUser"];
-        console.log("findAllCourses - currentUser:", currentUser?._id, "role:", currentUser?.role);
 
         if (currentUser) {
             const courses = dao.findAllCoursesWithEnrollmentStatus(currentUser._id);
@@ -20,23 +19,23 @@ export default function CourseRoutes(app, db) {
 
     const findCoursesForEnrolledUser = (req, res) => {
         let { userId } = req.params;
+
         if (userId === "current") {
             const currentUser = req.session["currentUser"];
-            console.log("findCoursesForEnrolledUser - currentUser:", currentUser?._id);
-
             if (!currentUser) {
                 return res.status(401).json({ message: "Not authenticated" });
             }
             userId = currentUser._id;
         }
+        const allEnrollments = db.enrollments;
         const courses = dao.findCoursesForEnrolledUser(userId);
+
+
         res.json(courses);
     };
 
     const createCourse = (req, res) => {
         const currentUser = req.session["currentUser"];
-        console.log("createCourse - currentUser:", currentUser?._id, "role:", currentUser?.role);
-
         if (!currentUser) {
             return res.status(401).json({ message: "Not authenticated - please sign in" });
         }
@@ -96,6 +95,7 @@ export default function CourseRoutes(app, db) {
 
     app.get("/api/courses", findAllCourses);
     app.get("/api/users/:userId/courses", findCoursesForEnrolledUser);
+    app.get("/api/users/current/courses", findCoursesForEnrolledUser);
     app.post("/api/users/current/courses", createCourse);
     app.delete("/api/courses/:courseId", deleteCourse);
     app.put("/api/courses/:courseId", updateCourse);
