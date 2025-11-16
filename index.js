@@ -12,24 +12,49 @@ import AssignmentRoutes from './Kambaz/Assignments/routes.js';
 import EnrollmentRoutes from "./Kambaz/Enrollments/routes.js";
 
 const app = express();
+
+const isProduction = process.env.NODE_ENV === 'production';
+
+const allowedOrigins = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://fa25-kambaz-next-js-git-a5-abhijiths-projects-7705a139.vercel.app",
+    "https://fa25-kambaz-next-js.vercel.app",
+];
+
+if (process.env.CLIENT_URL) {
+    allowedOrigins.push(process.env.CLIENT_URL);
+}
+
 app.use(cors({
     credentials: true,
-    origin: process.env.CLIENT_URL || "http://localhost:3000" || "https://fa25-kambaz-next-js-git-a5-abhijiths-projects-7705a139.vercel.app",
-})
-);
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.log("Blocked by CORS:", origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 const sessionOptions = {
     secret: process.env.SESSION_SECRET || "kambaz",
     resave: false,
     saveUninitialized: false,
+    proxy: isProduction,
+    cookie: {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        maxAge: 24 * 60 * 60 * 1000
+    }
 };
-if (process.env.SERVER_ENV !== "development") {
-    sessionOptions.proxy = true;
-    sessionOptions.cookie = {
-        sameSite: "none",
-        secure: true,
-        domain: process.env.SERVER_URL,
-    };
-}
+
 app.use(session(sessionOptions));
 
 app.use(express.json());
@@ -38,7 +63,12 @@ CourseRoutes(app, db);
 ModuleRoutes(app, db);
 AssignmentRoutes(app, db);
 EnrollmentRoutes(app, db);
-
 Hello(app);
 Lab5(app);
-app.listen(process.env.PORT || 4000)
+
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Environment: ${isProduction ? 'production' : 'development'}`);
+    console.log(`CORS enabled for:`, allowedOrigins);
+});
