@@ -3,6 +3,8 @@ let todos = [
     { id: 2, title: "Task 2", description: "Description 2", completed: true },
     { id: 3, title: "Task 3", description: "Description 3", completed: false },
     { id: 4, title: "Task 4", description: "Description 4", completed: true },
+    { id: 5, title: "Task 5", description: "Description 5", completed: true },
+    { id: 6, title: "Task 6", description: "Description 6", completed: true },
 ];
 
 export default function WorkingWithArrays(app) {
