@@ -62,11 +62,11 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 
 app.use(express.json());
-UserRoutes(app, db);
-CourseRoutes(app, db);
-ModuleRoutes(app, db);
-AssignmentRoutes(app, db);
-EnrollmentRoutes(app, db);
+UserRoutes(app);
+CourseRoutes(app);
+ModuleRoutes(app);
+AssignmentRoutes(app);
+EnrollmentRoutes(app);
 Hello(app);
 Lab5(app);
 
