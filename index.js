@@ -24,6 +24,7 @@ const allowedOrigins = [
     "http://localhost:3001",
     "https://fa25-kambaz-next-js-git-a5-abhijiths-projects-7705a139.vercel.app",
     "https://fa25-kambaz-next-js.vercel.app",
+    "https://fa25-kambaz-next-js-git-a6-abhijiths-projects-7705a139.vercel.app"
 ];
 
 if (process.env.CLIENT_URL) {
