@@ -4,9 +4,19 @@ import { v4 as uuidv4 } from "uuid";
 
 export default function UsersDao() {
     const createUser = (user) => {
-        const newUser = { ...user, _id: uuidv4() };
+        const newUser = {
+            ...user,
+            _id: uuidv4(),
+            firstName: user.firstName || "New",
+            lastName: user.lastName || "User",
+            role: user.role || "STUDENT",
+            loginId: user.loginId || `00${Date.now()}`,
+            section: user.section || "S101",
+            lastActivity: user.lastActivity || new Date(),
+            totalActivity: user.totalActivity || "00:00:00",
+        };
         return model.create(newUser);
-    }
+    };
 
 
     const findAllUsers = () => model.find();
