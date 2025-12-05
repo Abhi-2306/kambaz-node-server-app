@@ -12,6 +12,9 @@ const questionSchema = new mongoose.Schema({
     question: String,
     choices: [{ text: String, isCorrect: Boolean }],
     correctAnswer: Boolean,
+    blanks: [{
+        possibleAnswers: [String]
+    }],
     possibleAnswers: [String],
 });
 
