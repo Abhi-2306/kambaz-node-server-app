@@ -17,7 +17,7 @@ export default function EnrollmentsDao() {
         const enrollments = await model.find({ user: userId }).populate("course");
         const courses = enrollments
             .map((enrollment) => enrollment.course)
-            .filter((course) => course !== null);  // Filter out any nulls
+            .filter((course) => course !== null); 
         return courses;
     }
 

@@ -32,7 +32,6 @@ export default function CourseRoutes(app) {
     const findCoursesForEnrolledUser = async (req, res) => {
         let { userId } = req.params;
 
-        // Fix: handle undefined OR "current"
         if (!userId || userId === "current") {
             const currentUser = req.session["currentUser"];
             if (!currentUser) {

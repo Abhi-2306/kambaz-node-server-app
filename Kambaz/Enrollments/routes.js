@@ -138,7 +138,6 @@ export default function CourseRoutes(app) {
         }
     };
 
-    // Register routes - IMPORTANT: specific routes before parameterized routes
     app.get("/api/courses", findAllCourses);
     app.get("/api/users/current/courses", findCoursesForEnrolledUser);
     app.get("/api/users/:userId/courses", findCoursesForEnrolledUser);
